@@ -11,6 +11,7 @@
 #include "Bluetooth.h"
 #include "DeviceInformation.h"
 #include "song.h"
+#include "hfp_hf/bt_app_core.h"
 
 #define DS_TAG "DS_TAG"
 
@@ -19,15 +20,6 @@
 typedef void (*bt_app_cb_t)(uint16_t event, void *param);
 typedef int32_t (*music_data_cb_t)(uint8_t *data, int32_t len);
 // typedef int32_t (*music_data_channels_cb_t)(Channels *data, int32_t len);
-
-/* message to be sent */
-typedef struct
-{
-  uint16_t sig;   /*!< signal to bt_app_task */
-  uint16_t event; /*!< message event id */
-  bt_app_cb_t cb; /*!< context switch callback */
-  void *param;    /*!< parameter area needs to be last */
-} bt_app_msg_t;
 
 typedef void (*bt_app_copy_cb_t)(bt_app_msg_t *msg, void *p_dest, void *p_src);
 
