@@ -2,28 +2,28 @@
 #define _ENUM_STRINGS_H
 
 #include <string>
-#include <A2DPSession.h>
+#include "HFSession.h"
 
-std::string enumToString(A2DPSession::ConnectionState e)
+std::string enumToString(HFSession::ConnectionState e)
 {
   switch (e)
   {
-  case A2DPSession::ConnectionState::DISCONNECTED:
+  case HFSession::ConnectionState::DISCONNECTED:
     return "Disconnected";
-  case A2DPSession::ConnectionState::CONNECTING:
+  case HFSession::ConnectionState::CONNECTING:
     return "Connecting";
-  case A2DPSession::ConnectionState::CONNECTED:
+  case HFSession::ConnectionState::CONNECTED:
     return "Connected";
   }
 }
 
-std::string enumToString(A2DPSession::MediaState e)
+std::string enumToString(HFSession::MediaState e)
 {
   switch (e)
   {
-  case A2DPSession::MediaState::INACTIVE:
+  case HFSession::MediaState::INACTIVE:
     return "Inactive";
-  case A2DPSession::MediaState::ACTIVE:
+  case HFSession::MediaState::ACTIVE:
     return "Active";
   }
 }

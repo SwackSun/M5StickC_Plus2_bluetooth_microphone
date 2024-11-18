@@ -2,7 +2,7 @@
 #define _DEVICE_H
 
 #include <string>
-#include <DeviceInformation.h>
+#include "DeviceInformation.h"
 
 struct Device
 {

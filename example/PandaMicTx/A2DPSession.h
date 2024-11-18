@@ -25,7 +25,7 @@ typedef void (*bt_app_copy_cb_t)(bt_app_msg_t *msg, void *p_dest, void *p_src);
 
 bool bt_app_work_dispatch(bt_app_cb_t p_cback, uint16_t event, void *p_params, int param_len, bt_app_copy_cb_t p_copy_cback);
 
-class A2DPSession
+class HFSession
 {
 public:
   enum ConnectionState
@@ -42,7 +42,7 @@ public:
   };
 
 private:
-  static A2DPSession *ActiveSession;
+  static HFSession *ActiveSession;
   BluetoothAddress currentDevice;
   esp_a2d_connection_state_t a2dpConnectionState = ESP_A2D_CONNECTION_STATE_DISCONNECTED;
   bool keepActive;
@@ -53,13 +53,13 @@ public:
   ConnectionState connectionState = ConnectionState::DISCONNECTED;
   MediaState mediaState;
 
-  A2DPSession(data_callback_t dataCallback) : dataCallback(dataCallback)
+  HFSession(data_callback_t dataCallback) : dataCallback(dataCallback)
   {
   }
 
-  ~A2DPSession()
+  ~HFSession()
   {
-    if (this == A2DPSession::ActiveSession)
+    if (this == HFSession::ActiveSession)
     {
       this->stop();
     }
@@ -67,29 +67,29 @@ public:
 
   bool start(BluetoothAddress deviceAddress)
   {
-    if (A2DPSession::ActiveSession != nullptr)
+    if (HFSession::ActiveSession != nullptr)
     {
       ESP_LOGE(DS_TAG, "Only one active a2dp session is allowed.");
       return false;
     }
 
-    A2DPSession::ActiveSession = this;
+    HFSession::ActiveSession = this;
     keepActive = true;
 
     // register GAP callback function
-    ESP_ERROR_CHECK(esp_bt_gap_register_callback([](esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param) { A2DPSession::ActiveSession->bt_gap_callback(event, param); }));
+    ESP_ERROR_CHECK(esp_bt_gap_register_callback([](esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param) { HFSession::ActiveSession->bt_gap_callback(event, param); }));
 
     // initialize AVRCP controller
     ESP_ERROR_CHECK(esp_avrc_ct_init());
-    ESP_ERROR_CHECK(esp_avrc_ct_register_callback([](esp_avrc_ct_cb_event_t event, esp_avrc_ct_cb_param_t *param) { A2DPSession::ActiveSession->bt_avrc_callback(event, param); }));
+    ESP_ERROR_CHECK(esp_avrc_ct_register_callback([](esp_avrc_ct_cb_event_t event, esp_avrc_ct_cb_param_t *param) { HFSession::ActiveSession->bt_avrc_callback(event, param); }));
 
     //esp_avrc_rn_evt_cap_mask_t evt_set = {0};
     //esp_avrc_rn_evt_bit_mask_operation(ESP_AVRC_BIT_MASK_OP_SET, &evt_set, ESP_AVRC_RN_VOLUME_CHANGE);
     //assert(esp_avrc_tg_set_rn_evt_cap(&evt_set) == ESP_OK);
 
     /* initialize A2DP source */
-    ESP_ERROR_CHECK(esp_a2d_register_callback([](esp_a2d_cb_event_t event, esp_a2d_cb_param_t *param) { A2DPSession::ActiveSession->bt_a2dp_callback(event, param); }));
-    ESP_ERROR_CHECK(esp_a2d_source_register_data_callback([](uint8_t *data, int32_t len) { return A2DPSession::ActiveSession->bt_data_callback(data, len); }));
+    ESP_ERROR_CHECK(esp_a2d_register_callback([](esp_a2d_cb_event_t event, esp_a2d_cb_param_t *param) { HFSession::ActiveSession->bt_a2dp_callback(event, param); }));
+    ESP_ERROR_CHECK(esp_a2d_source_register_data_callback([](uint8_t *data, int32_t len) { return HFSession::ActiveSession->bt_data_callback(data, len); }));
     ESP_ERROR_CHECK(esp_a2d_source_init());
 
     // Set default parameters for Secure Simple Pairing
@@ -173,17 +173,17 @@ private:
   // callback function for A2DP source
   void bt_a2dp_callback(esp_a2d_cb_event_t event, esp_a2d_cb_param_t *param)
   {
-    // [D][A2DPSession.h:160] bt_a2dp_callback(): A2DP event 0
-    // [D][A2DPSession.h:165] bt_a2dp_callback(): A2DP connection State: 1
-    // [D][A2DPSession.h:160] bt_a2dp_callback(): A2DP event 0
-    // [D][A2DPSession.h:165] bt_a2dp_callback(): A2DP connection State: 2
-    // [D][A2DPSession.h:160] bt_a2dp_callback(): A2DP event 3
-    // [D][A2DPSession.h:191] bt_a2dp_callback(): A2DP media ctrl cmd: 2; state: 0
-    // [D][A2DPSession.h:160] bt_a2dp_callback(): A2DP event 1
-    // [D][A2DPSession.h:187] bt_a2dp_callback(): A2DP audio state: 2; mcc: -78
-    // [D][A2DPSession.h:198] bt_avrc_callback(): AVRC event 0
-    // [D][A2DPSession.h:202] bt_avrc_callback(): Avrc connection State: 1
-    // [D][A2DPSession.h:198] bt_avrc_callback(): AVRC event 5
+    // [D][HFSession.h:160] bt_a2dp_callback(): A2DP event 0
+    // [D][HFSession.h:165] bt_a2dp_callback(): A2DP connection State: 1
+    // [D][HFSession.h:160] bt_a2dp_callback(): A2DP event 0
+    // [D][HFSession.h:165] bt_a2dp_callback(): A2DP connection State: 2
+    // [D][HFSession.h:160] bt_a2dp_callback(): A2DP event 3
+    // [D][HFSession.h:191] bt_a2dp_callback(): A2DP media ctrl cmd: 2; state: 0
+    // [D][HFSession.h:160] bt_a2dp_callback(): A2DP event 1
+    // [D][HFSession.h:187] bt_a2dp_callback(): A2DP audio state: 2; mcc: -78
+    // [D][HFSession.h:198] bt_avrc_callback(): AVRC event 0
+    // [D][HFSession.h:202] bt_avrc_callback(): Avrc connection State: 1
+    // [D][HFSession.h:198] bt_avrc_callback(): AVRC event 5
 
     ESP_LOGD("", "A2DP event %d", event);
 
@@ -213,7 +213,7 @@ private:
         }
         else
         {
-          A2DPSession::ActiveSession = nullptr;
+          HFSession::ActiveSession = nullptr;
           ESP_LOGD(DS_TAG, "A2dp sesssion ended.");
         }
       }
@@ -310,6 +310,6 @@ private:
 //   return false;
 // }
 
-A2DPSession *A2DPSession::ActiveSession;
+HFSession *HFSession::ActiveSession;
 
 #endif

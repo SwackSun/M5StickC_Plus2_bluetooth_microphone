@@ -1,7 +1,7 @@
 #ifndef _HOME_VIEW_H
 #define _HOME_VIEW_H
 
-#include <A2DPSession.h>
+#include "HFSession.h"
 #include "Navigation/Drawable.h"
 #include "GlobalTicker.h"
 #include "utils.h"
@@ -20,7 +20,7 @@ class HomeView : public Drawable
   bool hasChanged = true;
   Drawable *mainMenu;
   Drawable *visualizer;
-  A2DPSession *aSession;
+  HFSession *aSession;
 
   GFXcanvas1 sidebar;
   GFXcanvas1 canvas;
@@ -31,7 +31,7 @@ class HomeView : public Drawable
   GlobalTicker screenTicker;
 
 public:
-  HomeView(CLite_GFX *gfx, Drawable *mainMenu, Drawable *visualizer, A2DPSession *aSession)
+  HomeView(CLite_GFX *gfx, Drawable *mainMenu, Drawable *visualizer, HFSession *aSession)
       : Drawable(gfx),
         mainMenu(mainMenu),
         visualizer(visualizer),
@@ -82,16 +82,16 @@ public:
     switch (key)
     {
     case KEY_A:
-      if (aSession->connectionState == A2DPSession::ConnectionState::CONNECTED)
+      if (aSession->connectionState == HFSession::ConnectionState::CONNECTED)
       {
-        if (aSession->mediaState == A2DPSession::MediaState::INACTIVE)
+        if (aSession->mediaState == HFSession::MediaState::INACTIVE)
         {
-          aSession->resume();
+          //aSession->resume();
           digitalWrite(LED_BUILTIN, HIGH);
         }
         else
         {
-          aSession->pause();
+          //aSession->pause();
           digitalWrite(LED_BUILTIN, LOW);
         }
       }
@@ -144,7 +144,7 @@ private:
 
   void drawSidebar()
   {
-    if (aSession->connectionState == A2DPSession::ConnectionState::CONNECTED)
+    if (aSession->connectionState == HFSession::ConnectionState::CONNECTED)
     {
       sidebar.setCursor(0, CHAR_HEIGHT);
       sidebar.print("M");
