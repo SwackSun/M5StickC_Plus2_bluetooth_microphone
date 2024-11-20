@@ -59,6 +59,8 @@
 // #undef CONFIG_BT_HFP_AUDIO_DATA_PATH_HCI
 // #define CONFIG_BT_HFP_AUDIO_DATA_PATH_HCI y
 
+#include "MicDriver.h"
+
 #define CONFIG_EXAMPLE_PEER_DEVICE_NAME "PandaMicTx"
 
 #define LOG_TAG "main"

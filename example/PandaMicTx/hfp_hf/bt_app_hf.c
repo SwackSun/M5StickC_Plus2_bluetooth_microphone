@@ -233,12 +233,8 @@ static void bt_app_hf_client_incoming_cb(const uint8_t *buf, uint32_t sz)
 /* callback for HF_CLIENT */
 void bt_app_hf_client_cb(esp_hf_client_cb_event_t event, esp_hf_client_cb_param_t *param)
 {
-<<<<<<< HEAD
-    ESP_LOGI(BT_HF_TAG, "%s", __func__);
-=======
     //ESP_LOGI(BT_HF_TAG, "%s",__func__);
     
->>>>>>> test HFP connect is ok
     if (event <= ESP_HF_CLIENT_PKT_STAT_NUMS_GET_EVT) {
         ESP_LOGI(BT_HF_TAG, "APP HFP event: %s", c_hf_evt_str[event]);
     } else {
