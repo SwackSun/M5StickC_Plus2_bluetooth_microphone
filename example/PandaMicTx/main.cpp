@@ -28,6 +28,7 @@
 #include "hfp_hf/gpio_pcm_config.h"
 #include "esp_console.h"
 #include "hfp_hf/app_hf_msg_set.h"
+#include "MicDriver.h"
 
 #define CONFIG_EXAMPLE_PEER_DEVICE_NAME "PandaMicTx"
 
@@ -36,6 +37,7 @@
 const float ADC_MODIFIER = 3.3 / 4095;
 const float BATTERY_MODIFIER = 2 * (3.45 / 4095);
 
+MicDriver micDriver = MicDriver();
 CLite_GFX lcd;
 Navigation navigation;
 // BluetoothClient bt;
@@ -275,10 +277,12 @@ static void bt_hf_client_hdl_stack_evt(uint16_t event, void *p_param)
         /* set up device name */
         // char *dev_name = "ESP_HFP_HF";
         // esp_bt_gap_set_device_name(dev_name);
-
+        ESP_LOGI(BT_HF_TAG, "============== BT_APP_EVT_STACK_UP");
         /* register GAP callback function */
         esp_bt_gap_register_callback(esp_bt_gap_cb);
+        ESP_LOGI(BT_HF_TAG, "============== esp_bt_gap_cb is set");
         esp_hf_client_register_callback(bt_app_hf_client_cb);
+        ESP_LOGI(BT_HF_TAG, "============== esp_hf_client_register_callback is set");
         esp_hf_client_init();
 
 #if (CONFIG_EXAMPLE_SSP_ENABLED == true)
@@ -308,6 +312,27 @@ static void bt_hf_client_hdl_stack_evt(uint16_t event, void *p_param)
         ESP_LOGE(BT_HF_TAG, "%s unhandled evt %d", __func__, event);
         break;
     }
+}
+
+void bt_app_hf_client_audio_open(void)
+{
+    ESP_LOGI(BT_HF_TAG, "%d", __func__);
+    micDriver.mic_init();
+}
+
+void bt_app_hf_client_audio_close(void)
+{
+
+}
+
+uint32_t bt_app_hf_client_outgoing_cb(uint8_t *p_buf, uint32_t sz)
+{
+  micDriver.mic_get_raw(p_buf,sz);
+}
+
+void bt_app_hf_client_incoming_cb(const uint8_t *buf, uint32_t sz)
+{
+
 }
 
 GlobalTicker powerTicker(5000, []() {
@@ -500,7 +525,6 @@ int32_t dataCallback(uint8_t *data, int32_t len)
     return 0;
 
   size_t read;
-  // ESP_ERROR_CHECK(i2s_read(I2S_PORT, buffer, len * 2, &read, pdMS_TO_TICKS(10)));
   ESP_ERROR_CHECK(i2s_read(I2S_PORT, buffer, len * 2, &read, portMAX_DELAY));
 
   for (int i = 0; i < read / 8; ++i)

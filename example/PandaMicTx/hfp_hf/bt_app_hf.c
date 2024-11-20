@@ -177,58 +177,59 @@ extern esp_bd_addr_t peer_addr;
 #define ESP_HFP_RINGBUF_SIZE 3600
 static RingbufHandle_t m_rb = NULL;
 
-static void bt_app_hf_client_audio_open(void)
-{
-    m_rb = xRingbufferCreate(ESP_HFP_RINGBUF_SIZE, RINGBUF_TYPE_BYTEBUF);
-}
+// static void bt_app_hf_client_audio_open(void)
+// {
+//     m_rb = xRingbufferCreate(ESP_HFP_RINGBUF_SIZE, RINGBUF_TYPE_BYTEBUF);
+// }
 
-static void bt_app_hf_client_audio_close(void)
-{
-    if (!m_rb) {
-        return ;
-    }
+// static void bt_app_hf_client_audio_close(void)
+// {
+//     if (!m_rb) {
+//         return ;
+//     }
 
-    vRingbufferDelete(m_rb);
-}
+//     vRingbufferDelete(m_rb);
+// }
 
-static uint32_t bt_app_hf_client_outgoing_cb(uint8_t *p_buf, uint32_t sz)
-{
-    if (!m_rb) {
-        return 0;
-    }
+// static uint32_t bt_app_hf_client_outgoing_cb(uint8_t *p_buf, uint32_t sz)
+// {
+//     if (!m_rb) {
+//         return 0;
+//     }
 
-    size_t item_size = 0;
-    uint8_t *data = xRingbufferReceiveUpTo(m_rb, &item_size, 0, sz);
-    if (item_size == sz) {
-        memcpy(p_buf, data, item_size);
-        vRingbufferReturnItem(m_rb, data);
-        return sz;
-    } else if (0 < item_size) {
-        vRingbufferReturnItem(m_rb, data);
-        return 0;
-    } else {
-        // data not enough, do not read
-        return 0;
-    }
-}
+//     size_t item_size = 0;
+//     uint8_t *data = xRingbufferReceiveUpTo(m_rb, &item_size, 0, sz);
+//     if (item_size == sz) {
+//         memcpy(p_buf, data, item_size);
+//         vRingbufferReturnItem(m_rb, data);
+//         return sz;
+//     } else if (0 < item_size) {
+//         vRingbufferReturnItem(m_rb, data);
+//         return 0;
+//     } else {
+//         // data not enough, do not read
+//         return 0;
+//     }
+// }
 
-static void bt_app_hf_client_incoming_cb(const uint8_t *buf, uint32_t sz)
-{
-    if (! m_rb) {
-        return;
-    }
-    BaseType_t done = xRingbufferSend(m_rb, (uint8_t *)buf, sz, 0);
-    if (! done) {
-        ESP_LOGE(BT_HF_TAG, "rb send fail");
-    }
+// static void bt_app_hf_client_incoming_cb(const uint8_t *buf, uint32_t sz)
+// {
+//     if (! m_rb) {
+//         return;
+//     }
+//     BaseType_t done = xRingbufferSend(m_rb, (uint8_t *)buf, sz, 0);
+//     if (! done) {
+//         ESP_LOGE(BT_HF_TAG, "rb send fail");
+//     }
 
-    //esp_hf_client_outgoing_data_ready();
-}
+//     //esp_hf_client_outgoing_data_ready();
+// }
 #endif /* #if CONFIG_BT_HFP_AUDIO_DATA_PATH_HCI */
 
 /* callback for HF_CLIENT */
 void bt_app_hf_client_cb(esp_hf_client_cb_event_t event, esp_hf_client_cb_param_t *param)
 {
+    ESP_LOGI(BT_HF_TAG, "%s", __func__);
     if (event <= ESP_HF_CLIENT_PKT_STAT_NUMS_GET_EVT) {
         ESP_LOGI(BT_HF_TAG, "APP HFP event: %s", c_hf_evt_str[event]);
     } else {
