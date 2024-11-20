@@ -11,7 +11,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
-#include "esp_log.h"
+#include <esp32-hal-log.h>
 #include "bt_app_core.h"
 
 static void bt_app_task_handler(void *arg);

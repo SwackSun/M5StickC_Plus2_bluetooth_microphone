@@ -9,6 +9,7 @@
 #include "soc/gpio_sig_map.h"
 #include "gpio_pcm_config.h"
 #include "esp_rom_gpio.h"
+#include <esp32-hal-log.h>
 
 #define GPIO_OUTPUT_PCM_FSYNC      (25)
 #define GPIO_OUTPUT_PCM_CLK_OUT    (5)
