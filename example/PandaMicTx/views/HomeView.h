@@ -1,7 +1,6 @@
 #ifndef _HOME_VIEW_H
 #define _HOME_VIEW_H
 
-#include <A2DPSession.h>
 #include "Navigation/Drawable.h"
 #include "GlobalTicker.h"
 #include "utils.h"
@@ -20,7 +19,7 @@ class HomeView : public Drawable
   bool hasChanged = true;
   Drawable *mainMenu;
   Drawable *visualizer;
-  A2DPSession *aSession;
+  BlueStatus *bStatus;
 
   GFXcanvas1 sidebar;
   GFXcanvas1 canvas;
@@ -31,11 +30,11 @@ class HomeView : public Drawable
   GlobalTicker screenTicker;
 
 public:
-  HomeView(CLite_GFX *gfx, Drawable *mainMenu, Drawable *visualizer, A2DPSession *aSession)
+  HomeView(CLite_GFX *gfx, Drawable *mainMenu, Drawable *visualizer, BlueStatus *bStatus)
       : Drawable(gfx),
         mainMenu(mainMenu),
         visualizer(visualizer),
-        aSession(aSession),
+        bStatus(bStatus),
         sidebar(SIDEBAR_WIDTH, gfx->height()), canvas(gfx->width() - SIDEBAR_WIDTH, gfx->height()),
         batteryTicker(1000, [&]() { refreshBatteryPercentage(); }),
         refreshTicker(250, [&]() { hasChanged = true; }),
@@ -82,16 +81,16 @@ public:
     switch (key)
     {
     case KEY_A:
-      if (aSession->connectionState == A2DPSession::ConnectionState::CONNECTED)
+      if (bStatus->connectionState == BlueStatus::ConnectionState::CONNECTED)
       {
-        if (aSession->mediaState == A2DPSession::MediaState::INACTIVE)
+        if (bStatus->mediaState == BlueStatus::MediaState::INACTIVE)
         {
-          aSession->resume();
+          bStatus->resume();
           digitalWrite(LED_BUILTIN, HIGH);
         }
         else
         {
-          aSession->pause();
+          bStatus->pause();
           digitalWrite(LED_BUILTIN, LOW);
         }
       }
@@ -136,15 +135,15 @@ private:
     canvas.println(storage.getActiveDevice().name);
 
     canvas.print("BT: ");
-    canvas.println(enumToString(aSession->connectionState).c_str());
+    canvas.println(enumToString(bStatus->connectionState).c_str());
 
     canvas.print("TX: ");
-    canvas.println(enumToString(aSession->mediaState).c_str());
+    canvas.println(enumToString(bStatus->mediaState).c_str());
   }
 
   void drawSidebar()
   {
-    if (aSession->connectionState == A2DPSession::ConnectionState::CONNECTED)
+    if (bStatus->connectionState == BlueStatus::ConnectionState::CONNECTED)
     {
       sidebar.setCursor(0, CHAR_HEIGHT);
       sidebar.print("M");

@@ -1,7 +1,6 @@
 #ifndef _DEVICES_MENU_H
 #define _DEVICES_MENU_H
 
-#include <DiscoverySession.h>
 #include "Navigation/Menu.h"
 #include "storage/Storage.h"
 
