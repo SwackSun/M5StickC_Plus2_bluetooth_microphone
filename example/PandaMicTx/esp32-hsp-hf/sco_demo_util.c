@@ -20,8 +20,8 @@
  * THIS SOFTWARE IS PROVIDED BY BLUEKITCHEN GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BLUEKITCHEN
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS
+ * RINGWALD OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -53,11 +53,6 @@
 #include "classic/hfp.h"
 #include "classic/hfp_msbc.h"
 
-#ifdef _MSC_VER
-// ignore deprecated warning for fopen
-#pragma warning(disable : 4996)
-#endif
-
 #ifdef HAVE_POSIX_FILE_IO
 #include "wav_util.h"
 #endif
@@ -76,6 +71,7 @@
 // number of sco packets until 'report' on console
 #define SCO_REPORT_PERIOD           100
 
+// #define ENABLE_SCO_STEREO_PLAYBACK
 
 #ifdef HAVE_POSIX_FILE_IO
 // length and name of wav file on disk
@@ -209,7 +205,11 @@ static void playback_callback(int16_t * buffer, uint16_t num_samples){
     // fill with silence while paused
     if (audio_output_paused){
         if (btstack_ring_buffer_bytes_available(&audio_output_ring_buffer) < prebuffer_bytes){
+#ifdef ENABLE_SCO_STEREO_PLAYBACK
+            memset(buffer, 0, num_samples * BYTES_PER_FRAME * 2);
+#else
             memset(buffer, 0, num_samples * BYTES_PER_FRAME);
+#endif 
            return;
         } else {
             // resume playback
@@ -219,13 +219,32 @@ static void playback_callback(int16_t * buffer, uint16_t num_samples){
 
     // get data from ringbuffer
     uint32_t bytes_read = 0;
+#ifdef ENABLE_SCO_STEREO_PLAYBACK
+    while (num_samples){
+        int16_t temp[16];
+        unsigned int bytes_to_read = btstack_min(num_samples * BYTES_PER_FRAME, sizeof(temp));
+        btstack_ring_buffer_read(&audio_output_ring_buffer, (uint8_t *) &temp[0], bytes_to_read, &bytes_read);
+        if (bytes_read == 0) break;
+        unsigned int i;
+        for (i=0;i<bytes_read / BYTES_PER_FRAME;i++){
+            *buffer++ = temp[i];
+            *buffer++ = temp[i];
+            num_samples--;
+        }
+    }
+#else
     btstack_ring_buffer_read(&audio_output_ring_buffer, (uint8_t *) buffer, num_samples * BYTES_PER_FRAME, &bytes_read);
     num_samples -= bytes_read / BYTES_PER_FRAME;
     buffer      += bytes_read / BYTES_PER_FRAME;
+#endif
 
     // fill with 0 if not enough
     if (num_samples){
+#ifdef ENABLE_SCO_STEREO_PLAYBACK
+        memset(buffer, 0, num_samples * BYTES_PER_FRAME * 2);
+#else
         memset(buffer, 0, num_samples * BYTES_PER_FRAME);
+#endif
         audio_output_paused = 1;
     }
 }
@@ -249,7 +268,11 @@ static int audio_initialize(int sample_rate){
     const btstack_audio_sink_t * audio_sink = btstack_audio_sink_get_instance();
     if (!audio_sink) return 0;
 
+#ifdef ENABLE_SCO_STEREO_PLAYBACK
+    audio_sink->init(2, sample_rate, &playback_callback);
+#else
     audio_sink->init(1, sample_rate, &playback_callback);
+#endif
     audio_sink->start_stream();
 
     audio_output_paused  = 1;
