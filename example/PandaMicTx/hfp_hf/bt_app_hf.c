@@ -26,6 +26,8 @@
 #include "sys/time.h"
 #include "sdkconfig.h"
 
+#include "mic_driver.h"
+
 const char *c_hf_evt_str[] = {
     "CONNECTION_STATE_EVT",              /*!< connection state changed event */
     "AUDIO_STATE_EVT",                   /*!< audio connection state change event */

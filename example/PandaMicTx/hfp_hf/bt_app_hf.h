@@ -11,7 +11,7 @@
 #include "esp_hf_client_api.h"
 
 
-#define BT_HF_TAG               "BT_HF"
+#define BT_HF_TAG "BT_HF"
 
 #ifdef __cplusplus
 extern "C" {
