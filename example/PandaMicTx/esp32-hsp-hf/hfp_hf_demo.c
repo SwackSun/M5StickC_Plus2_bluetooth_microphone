@@ -68,7 +68,7 @@ const char hfp_hf_service_name[] = "HFP HF Demo";
 
 #ifdef HAVE_BTSTACK_STDIN
 // static const char * device_addr_string = "6C:72:E7:10:22:EE";
-static const char * device_addr_string = "00:02:72:DC:31:C1";
+static const char * device_addr_string = "F4:4E:FC:87:A4:05";
 #endif
 
 static bd_addr_t device_addr;

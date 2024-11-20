@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#include "hfp_hf_main.h"
 
 #ifdef ESP_PLATFORM
 #include <ble/le_device_db_tlv.h>
@@ -120,11 +121,7 @@ static void trigger_shutdown(void) {
     hci_power_control(HCI_POWER_OFF);
 }
 
-#ifdef ESP_PLATFORM
-int app_main(void) {
-#else
-int main(int argc, const char *argv[]) {
-#endif
+int hfp_hf_main(void) {
 
     // Configure BTstack for ESP32 VHCI Controller
     btstack_init();
