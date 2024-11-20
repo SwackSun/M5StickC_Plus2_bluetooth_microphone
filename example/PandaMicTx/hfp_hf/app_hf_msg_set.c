@@ -10,7 +10,9 @@
 #include "app_hf_msg_set.h"
 #include "esp_console.h"
 #include "argtable3/argtable3.h"
-#include "esp_log.h"
+#include <esp32-hal-log.h>
+
+#define BT_HF_MSG                  "HF_MSG"
 
 extern esp_bd_addr_t peer_addr;
 
@@ -39,48 +41,48 @@ static bat_args_t bat_args;
 
 HF_CMD_HANDLER(conn)
 {
-    printf("connect\n");
+    ESP_LOGE(BT_HF_MSG,"connect\n");
     esp_hf_client_connect(peer_addr);
     return 0;
 }
 
 HF_CMD_HANDLER(disc)
 {
-    printf("disconnect\n");
+    ESP_LOGE(BT_HF_MSG,"disconnect\n");
     esp_hf_client_disconnect(peer_addr);
     return 0;
 }
 
 HF_CMD_HANDLER(conn_audio)
 {
-    printf("connect audio\n");
+    ESP_LOGE(BT_HF_MSG,"connect audio\n");
     esp_hf_client_connect_audio(peer_addr);
     return 0;
 }
 
 HF_CMD_HANDLER(disc_audio)
 {
-    printf("disconnect audio\n");
+    ESP_LOGE(BT_HF_MSG,"disconnect audio\n");
     esp_hf_client_disconnect_audio(peer_addr);
     return 0;
 }
 
 HF_CMD_HANDLER(query_op)
 {
-    printf("Query operator\n");
+    ESP_LOGE(BT_HF_MSG,"Query operator\n");
     esp_hf_client_query_current_operator_name();
     return 0;
 }
 
 HF_CMD_HANDLER(answer)
 {
-    printf("Answer call\n");
+    ESP_LOGE(BT_HF_MSG,"Answer call\n");
     esp_hf_client_answer_call();
     return 0;
 }
 HF_CMD_HANDLER(reject)
 {
-    printf("Reject call\n");
+    ESP_LOGE(BT_HF_MSG,"Reject call\n");
     esp_hf_client_reject_call();
     return 0;
 }
@@ -88,9 +90,9 @@ HF_CMD_HANDLER(reject)
 HF_CMD_HANDLER(dial)
 {
     if (argn != 2) {
-        printf("Insufficient number of arguments");
+        ESP_LOGE(BT_HF_MSG,"Insufficient number of arguments");
     } else {
-        printf("Dial number %s\n", argv[1]);
+        ESP_LOGE(BT_HF_MSG,"Dial number %s\n", argv[1]);
         esp_hf_client_dial(argv[1]);
     }
     return 0;
@@ -98,7 +100,7 @@ HF_CMD_HANDLER(dial)
 
 HF_CMD_HANDLER(redial)
 {
-    printf("Dial number\n");
+    ESP_LOGE(BT_HF_MSG,"Dial number\n");
     esp_hf_client_dial(NULL);
     return 0;
 }
@@ -106,16 +108,16 @@ HF_CMD_HANDLER(redial)
 HF_CMD_HANDLER(dial_mem)
 {
     if (argn != 2) {
-        printf("Insufficient number of arguments");
+        ESP_LOGE(BT_HF_MSG,"Insufficient number of arguments");
         return 1;
     }
     int index;
     if (sscanf(argv[1], "%d", &index) != 1) {
-        printf("Invalid argument %s\n", argv[1]);
+        ESP_LOGE(BT_HF_MSG,"Invalid argument %s\n", argv[1]);
         return 1;
     }
 
-    printf("Dial memory %d\n", index);
+    ESP_LOGE(BT_HF_MSG,"Dial memory %d\n", index);
     esp_hf_client_dial_memory(index);
     return 0;
 }
@@ -123,14 +125,14 @@ HF_CMD_HANDLER(dial_mem)
 
 HF_CMD_HANDLER(start_vr)
 {
-    printf("Start voice recognition\n");
+    ESP_LOGE(BT_HF_MSG,"Start voice recognition\n");
     esp_hf_client_start_voice_recognition();
     return 0;
 }
 
 HF_CMD_HANDLER(stop_vr)
 {
-    printf("Stop voice recognition\n");
+    ESP_LOGE(BT_HF_MSG,"Stop voice recognition\n");
     esp_hf_client_stop_voice_recognition();
     return 0;
 }
@@ -138,45 +140,45 @@ HF_CMD_HANDLER(stop_vr)
 HF_CMD_HANDLER(volume_update)
 {
     if (argn != 3) {
-        printf("Insufficient number of arguments");
+        ESP_LOGE(BT_HF_MSG,"Insufficient number of arguments");
         return 1;
     }
     int target, volume;
     if (sscanf(argv[1], "%d", &target) != 1 ||
             (target != ESP_HF_VOLUME_CONTROL_TARGET_SPK &&
              target != ESP_HF_VOLUME_CONTROL_TARGET_MIC)) {
-        printf("Invalid argument for target %s\n", argv[1]);
+        ESP_LOGE(BT_HF_MSG,"Invalid argument for target %s\n", argv[1]);
         return 1;
     }
 
     if (sscanf(argv[2], "%d", &volume) != 1 ||
             (volume < 0 || volume > 15)) {
-        printf("Invalid argument for volume %s\n", argv[2]);
+        ESP_LOGE(BT_HF_MSG,"Invalid argument for volume %s\n", argv[2]);
         return 1;
     }
 
-    printf("volume update\n");
+    ESP_LOGE(BT_HF_MSG,"volume update\n");
     esp_hf_client_volume_update(target, volume);
     return 0;
 }
 
 HF_CMD_HANDLER(query_call)
 {
-    printf("Query current call status\n");
+    ESP_LOGE(BT_HF_MSG,"Query current call status\n");
     esp_hf_client_query_current_calls();
     return 0;
 }
 
 HF_CMD_HANDLER(retrieve_subscriber)
 {
-    printf("Retrieve subscriber information\n");
+    ESP_LOGE(BT_HF_MSG,"Retrieve subscriber information\n");
     esp_hf_client_retrieve_subscriber_info();
     return 0;
 }
 
 HF_CMD_HANDLER(request_last_voice_tag)
 {
-    printf("Request last voice tag\n");
+    ESP_LOGE(BT_HF_MSG,"Request last voice tag\n");
     esp_hf_client_request_last_voice_tag_number();
     return 0;
 }
@@ -184,20 +186,20 @@ HF_CMD_HANDLER(request_last_voice_tag)
 HF_CMD_HANDLER(btrh)
 {
     if (argn != 2) {
-        printf("Insufficient number of arguments");
+        ESP_LOGE(BT_HF_MSG,"Insufficient number of arguments");
         return 1;
     }
 
     int btrh;
     if (sscanf(argv[1], "%d", &btrh) != 1) {
-        printf("Invalid argument %s\n", argv[1]);
+        ESP_LOGE(BT_HF_MSG,"Invalid argument %s\n", argv[1]);
         return 1;
     }
     if (btrh < ESP_HF_BTRH_CMD_HOLD || btrh > ESP_HF_BTRH_CMD_REJECT) {
-        printf("Invalid argument %s\n", argv[1]);
+        ESP_LOGE(BT_HF_MSG,"Invalid argument %s\n", argv[1]);
         return 1;
     }
-    printf("respond and hold command: %d\n", btrh);
+    ESP_LOGE(BT_HF_MSG,"respond and hold command: %d\n", btrh);
     esp_hf_client_send_btrh_cmd(btrh);
     return 0;
 }
@@ -219,23 +221,23 @@ static bool is_dtmf_code(char c)
 HF_CMD_HANDLER(dtmf)
 {
     if (argn != 2) {
-        printf("Insufficient number of arguments");
+        ESP_LOGE(BT_HF_MSG,"Insufficient number of arguments");
         return 1;
     }
 
     if (strlen(argv[1]) != 1 || !is_dtmf_code(argv[1][0])) {
-        printf("Invalid argument %s\n", argv[1]);
+        ESP_LOGE(BT_HF_MSG,"Invalid argument %s\n", argv[1]);
         return 1;
     }
 
-    printf("send dtmf code: %s\n", argv[1]);
+    ESP_LOGE(BT_HF_MSG,"send dtmf code: %s\n", argv[1]);
     esp_hf_client_send_dtmf(argv[1][0]);
     return 0;
 }
 
 HF_CMD_HANDLER(xapl)
 {
-    printf("send XAPL feature enable command to indicate battery level\n");
+    ESP_LOGE(BT_HF_MSG,"send XAPL feature enable command to indicate battery level\n");
     //esp_hf_client_send_xapl("0505-1995-0610", ESP_HF_CLIENT_XAPL_FEAT_BATTERY_REPORT | ESP_HF_CLIENT_XAPL_FEAT_DOCKED);
     return 0;
 }
@@ -252,11 +254,11 @@ HF_CMD_HANDLER(iphoneaccev)
     bool docked = bat_args.docked->ival[0] == 0 ? false : true;
 
     if (bat_level > 9 || bat_level < 0) {
-        printf("Invalid argument for battery level %d\n", bat_level);
+        ESP_LOGE(BT_HF_MSG,"Invalid argument for battery level %d\n", bat_level);
         return 1;
     }
 
-    printf("send battery level and docker status\n");
+    ESP_LOGE(BT_HF_MSG,"send battery level and docker status\n");
     // esp_hf_client_send_iphoneaccev(bat_level, docked);
     return 0;
 }
@@ -334,7 +336,7 @@ static char *hf_cmd_explain[] = {
 
 void register_hfp_hf(void)
 {
-
+    ESP_LOGE(BT_HF_MSG,"%s\n",__func__);
         const esp_console_cmd_t con_cmd = {
             .command = "con",
             .help = hf_cmd_explain[HF_CMD_IDX_CON],

@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <inttypes.h>
+#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 #include <Arduino.h>
 #include <EasyButton.h>
 #include <Wire.h>
@@ -28,6 +29,36 @@
 #include "hfp_hf/gpio_pcm_config.h"
 #include "esp_console.h"
 #include "hfp_hf/app_hf_msg_set.h"
+//#include "sdkconfig.h"
+
+// #undef CORE_DEBUG_LEVEL
+// #define CORE_DEBUG_LEVEL 4
+// #undef CONFIG_LOG_DEFAULT_LEVEL_DEBUG
+// #define CONFIG_LOG_DEFAULT_LEVEL_DEBUG y
+// #undef CONFIG_LOG_DEFAULT_LEVEL
+// #define CONFIG_LOG_DEFAULT_LEVEL 4
+// #undef CONFIG_LOG_MAXIMUM_EQUALS_DEFAULT
+// #define CONFIG_LOG_MAXIMUM_EQUALS_DEFAULT y
+// #undef CONFIG_LOG_MAXIMUM_LEVEL
+// #define CONFIG_LOG_MAXIMUM_LEVEL 4
+// #undef CONFIG_BT_ENABLED
+// #define CONFIG_BT_ENABLED y
+// #undef CONFIG_BT_BLE_ENABLED
+// #define CONFIG_BT_BLE_ENABLED n
+// #undef CONFIG_BTDM_CTRL_MODE_BR_EDR_ONLY
+// #define CONFIG_BTDM_CTRL_MODE_BR_EDR_ONLY y
+// #undef CONFIG_BTDM_CTRL_BR_EDR_MAX_SYNC_CONN
+// #define CONFIG_BTDM_CTRL_BR_EDR_MAX_SYNC_CONN 1
+// #undef CONFIG_BT_BLUEDROID_ENABLED
+// #define CONFIG_BT_BLUEDROID_ENABLED y
+// #undef CONFIG_BT_CLASSIC_ENABLED
+// #define CONFIG_BT_CLASSIC_ENABLED y
+// #undef CONFIG_BT_HFP_ENABLE
+// #define CONFIG_BT_HFP_ENABLE y
+// #undef CONFIG_BT_HFP_CLIENT_ENABLE
+// #define CONFIG_BT_HFP_CLIENT_ENABLE y
+// #undef CONFIG_BT_HFP_AUDIO_DATA_PATH_HCI
+// #define CONFIG_BT_HFP_AUDIO_DATA_PATH_HCI y
 
 #define CONFIG_EXAMPLE_PEER_DEVICE_NAME "PandaMicTx"
 
